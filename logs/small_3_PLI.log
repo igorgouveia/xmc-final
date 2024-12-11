@@ -1,0 +1,61 @@
+=== PLI para TSP ===
+Instância: small_3
+Método: PLI
+Número de cidades: 8
+
+Matriz de custos (distância * (1 + risco)):
+   0.00  120.00  195.00   55.00  280.00  450.00  350.00  144.00 
+ 120.00    0.00  234.00  168.00  350.00  640.00  260.00   88.00 
+ 195.00  234.00    0.00  208.00  120.00  525.00  234.00  156.00 
+  55.00  168.00  208.00    0.00  234.00  392.00  308.00  132.00 
+ 280.00  350.00  120.00  234.00    0.00  286.00  450.00  234.00 
+ 450.00  640.00  525.00  392.00  286.00    0.00  765.00  560.00 
+ 350.00  260.00  234.00  308.00  450.00  765.00    0.00  180.00 
+ 144.00   88.00  156.00  132.00  234.00  560.00  180.00    0.00 
+
+Tempos mínimos:
+KingsLanding: 4
+Winterfell: 6
+CasterlyRock: 8
+Dragonstone: 4
+Highgarden: 6
+Sunspear: 6
+Pyke: 4
+Riverrun: 4
+
+=== Execução do algoritmo ===
+Resolvendo relaxação linear...
+Relaxação linear resolvida. Valor: 1405.25
+
+Resolvendo com parâmetros:
+- Tempo limite: 600 segundos
+- Gap alvo: 1.00%
+- Presolve: ON
+- Cuts: GMI=ON MIR=ON COV=ON CLQ=ON
+
+Iniciando resolução MIP...
+Solução ótima encontrada!
+
+Rota encontrada:
+1: KingsLanding
+2: Winterfell
+3: Riverrun
+4: Pyke
+5: CasterlyRock
+6: Highgarden
+7: Sunspear
+8: Dragonstone
+
+Solução encontrada:
+  Lower bound (relaxação): 1405.25
+  Upper bound (inteira): 1517.00
+  Gap: 7.37%
+
+Resultados finais:
+Custo: 1517.00
+Tempo: 0.01 s
+Gap: 7.37%
+Viável: Sim
+
+Rota encontrada:
+KingsLanding Winterfell Riverrun Pyke CasterlyRock Highgarden Sunspear Dragonstone 

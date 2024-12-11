@@ -1,0 +1,82 @@
+=== PLI para TSP ===
+Instância: medium_2
+Método: PLI
+Número de cidades: 15
+
+Matriz de custos (distância * (1 + risco)):
+   0.00  658.50  773.30  247.50  399.10  708.80  219.70  504.90  484.40  540.60  539.00  394.20  409.50  549.10  364.50 
+ 651.70    0.00  558.40  413.40  316.20  335.40  401.20  320.60  351.90  319.50  288.00  625.50  608.00  474.00  568.10 
+ 584.00  276.90    0.00  569.50  257.40  540.60  210.00  622.80  672.00  456.00  324.00  366.70  486.40  360.10  319.60 
+ 366.60  763.30  292.60    0.00  343.40  561.00  772.20  310.50  796.10  304.50  332.80  499.20  530.40  725.90  258.70 
+ 436.90  273.00  558.00  658.50    0.00  771.40  465.00  592.80  500.80  457.60  527.00  254.80  482.80  515.20  416.50 
+ 598.50  511.20  324.00  573.80  252.00    0.00  335.40  361.60  553.80  297.50  453.70  666.40  222.60  705.60  670.50 
+ 444.60  349.50  693.50  390.40  335.40  306.00    0.00  455.00  669.80  296.80  331.50  525.00  763.20  259.50  459.80 
+ 645.00  401.70  641.60  429.00  527.00  286.00  328.10    0.00  611.80  712.80  583.50  710.60  648.00  647.90  468.80 
+ 289.90  550.80  241.80  453.90  421.40  659.60  453.00  365.40    0.00  672.00  440.80  372.00  304.20  584.00  357.50 
+ 649.40  483.60  715.70  449.40  333.00  312.00  836.00  369.00  349.60    0.00  624.00  481.00  678.30  393.90  375.70 
+ 536.20  411.40  354.00  401.40  399.00  412.30  546.00  214.50  496.00  326.30    0.00  425.00  257.40  617.10  231.00 
+ 779.40  289.50  313.20  532.50  324.90  443.20  322.40  479.40  234.00  510.00  348.60    0.00  749.70  373.50  401.40 
+ 282.00  780.90  414.00  436.80  651.20  330.20  552.50  453.70  379.10  322.00  694.80  342.00    0.00  455.40  661.50 
+ 543.40  414.40  231.40  763.30  369.20  620.50  291.20  374.00  625.50  723.60  519.00  649.80  234.00    0.00  477.10 
+ 448.00  395.20  567.80  247.00  394.40  264.60  756.00  516.00  653.40  298.50  651.70  684.80  445.90  304.30    0.00 
+
+Tempos mínimos:
+KingsLanding: 2
+Winterfell: 2
+CasterlyRock: 2
+Dragonstone: 2
+Highgarden: 2
+Sunspear: 2
+Pyke: 2
+Riverrun: 2
+Storms_End: 2
+Dorne: 2
+The_Eyrie: 2
+Oldtown: 2
+The_Twins: 2
+Harrenhal: 2
+The_Wall: 2
+
+=== Execução do algoritmo ===
+Resolvendo relaxação linear...
+Relaxação linear resolvida. Valor: 3962.95
+
+Resolvendo com parâmetros:
+- Tempo limite: 600 segundos
+- Gap alvo: 1.00%
+- Presolve: ON
+- Cuts: GMI=ON MIR=ON COV=ON CLQ=ON
+
+Iniciando resolução MIP...
+Solução ótima encontrada!
+
+Rota encontrada:
+1: KingsLanding
+2: Dragonstone
+3: The_Wall
+4: Dorne
+5: Sunspear
+6: Highgarden
+7: Oldtown
+8: Storms_End
+9: CasterlyRock
+10: Winterfell
+11: The_Eyrie
+12: Riverrun
+13: Pyke
+14: Harrenhal
+15: The_Twins
+
+Solução encontrada:
+  Lower bound (relaxação): 3962.95
+  Upper bound (inteira): 4012.30
+  Gap: 1.23%
+
+Resultados finais:
+Custo: 4012.30
+Tempo: 0.01 s
+Gap: 1.23%
+Viável: Sim
+
+Rota encontrada:
+KingsLanding Dragonstone The_Wall Dorne Sunspear Highgarden Oldtown Storms_End CasterlyRock Winterfell The_Eyrie Riverrun Pyke Harrenhal The_Twins 

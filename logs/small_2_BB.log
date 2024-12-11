@@ -1,0 +1,45 @@
+=== Branch and Bound para TSP ===
+Instância: small_2
+Método: Branch and Bound
+Número de cidades: 8
+
+Matriz de distâncias:
+   0.00  100.00  150.00   50.00  200.00  300.00  250.00  120.00 
+ 100.00    0.00  180.00  140.00  250.00  400.00  200.00   80.00 
+ 150.00  180.00    0.00  160.00  100.00  350.00  180.00  130.00 
+  50.00  140.00  160.00    0.00  180.00  280.00  220.00  110.00 
+ 200.00  250.00  100.00  180.00    0.00  220.00  300.00  180.00 
+ 300.00  400.00  350.00  280.00  220.00    0.00  450.00  350.00 
+ 250.00  200.00  180.00  220.00  300.00  450.00    0.00  150.00 
+ 120.00   80.00  130.00  110.00  180.00  350.00  150.00    0.00 
+
+Matriz de riscos:
+   0.00    0.30    0.40    0.20    0.60    0.80    0.60    0.30 
+   0.30    0.00    0.40    0.30    0.60    0.90    0.40    0.20 
+   0.40    0.40    0.00    0.40    0.30    0.80    0.40    0.30 
+   0.20    0.30    0.40    0.00    0.40    0.60    0.60    0.30 
+   0.60    0.60    0.30    0.40    0.00    0.40    0.80    0.40 
+   0.80    0.90    0.80    0.60    0.40    0.00    0.90    0.90 
+   0.60    0.40    0.40    0.60    0.80    0.90    0.00    0.30 
+   0.30    0.20    0.30    0.30    0.40    0.90    0.30    0.00 
+
+Tempos mínimos:
+KingsLanding: 2
+Winterfell: 3
+CasterlyRock: 4
+Dragonstone: 2
+Highgarden: 3
+Sunspear: 3
+Pyke: 2
+Riverrun: 2
+
+=== Execução do algoritmo ===
+
+Resultados finais:
+Custo: 2598.00
+Tempo: 0.00 s
+Gap: 45.19%
+Viável: Sim
+
+Rota encontrada:
+KingsLanding Dragonstone Riverrun CasterlyRock Highgarden Winterfell Pyke Sunspear 
