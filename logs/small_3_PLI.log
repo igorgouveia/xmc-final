@@ -1,31 +1,25 @@
 === PLI para TSP ===
 Instância: small_3
 Método: PLI
-Número de cidades: 8
+Número de cidades: 5
 
 Matriz de custos (distância * (1 + risco)):
-   0.00  120.00  195.00   55.00  280.00  450.00  350.00  144.00 
- 120.00    0.00  234.00  168.00  350.00  640.00  260.00   88.00 
- 195.00  234.00    0.00  208.00  120.00  525.00  234.00  156.00 
-  55.00  168.00  208.00    0.00  234.00  392.00  308.00  132.00 
- 280.00  350.00  120.00  234.00    0.00  286.00  450.00  234.00 
- 450.00  640.00  525.00  392.00  286.00    0.00  765.00  560.00 
- 350.00  260.00  234.00  308.00  450.00  765.00    0.00  180.00 
- 144.00   88.00  156.00  132.00  234.00  560.00  180.00    0.00 
+   0.00  172.50  250.00  143.00  216.00 
+ 172.50    0.00  168.00  212.50  176.00 
+ 250.00  168.00    0.00  138.00  237.50 
+ 143.00  212.50  138.00    0.00  180.00 
+ 216.00  176.00  237.50  180.00    0.00 
 
 Tempos mínimos:
-KingsLanding: 4
-Winterfell: 6
-CasterlyRock: 8
-Dragonstone: 4
-Highgarden: 6
-Sunspear: 6
-Pyke: 4
-Riverrun: 4
+KingsLanding: 12
+Winterfell: 8
+CasterlyRock: 9
+Dragonstone: 7
+Highgarden: 10
 
 === Execução do algoritmo ===
 Resolvendo relaxação linear...
-Relaxação linear resolvida. Valor: 1405.25
+Relaxação linear resolvida. Valor: 886.70
 
 Resolvendo com parâmetros:
 - Tempo limite: 600 segundos
@@ -38,24 +32,27 @@ Solução ótima encontrada!
 
 Rota encontrada:
 1: KingsLanding
-2: Winterfell
-3: Riverrun
-4: Pyke
-5: CasterlyRock
-6: Highgarden
-7: Sunspear
-8: Dragonstone
+2: Highgarden
+3: Winterfell
+4: CasterlyRock
+5: Dragonstone
 
 Solução encontrada:
-  Lower bound (relaxação): 1405.25
-  Upper bound (inteira): 1517.00
-  Gap: 7.37%
+  Lower bound (relaxação): 886.70
+  Upper bound (inteira): 887.00
+  Gap: 0.03%
 
 Resultados finais:
-Custo: 1517.00
-Tempo: 0.01 s
-Gap: 7.37%
+Status: Solução ótima encontrada
+Custo: 887.00
+Tempo: 0.00 s
+Gap: 0.03%
 Viável: Sim
 
 Rota encontrada:
-KingsLanding Winterfell Riverrun Pyke CasterlyRock Highgarden Sunspear Dragonstone 
+KingsLanding Highgarden Winterfell CasterlyRock Dragonstone 
+
+Solução é viável porque:
+- Todas as cidades são visitadas exatamente uma vez
+- Tempo total (46) respeita o poder de KingsLanding (150)
+- Rota forma um ciclo válido começando e terminando em KingsLanding

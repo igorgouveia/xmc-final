@@ -1,45 +1,35 @@
 === PLI para TSP ===
 Instância: medium_1
 Método: PLI
-Número de cidades: 15
+Número de cidades: 10
 
 Matriz de custos (distância * (1 + risco)):
-   0.00  336.00  322.40  699.20  511.00  412.80  540.40  292.80  271.50  501.60  646.50  435.50  520.50  271.70  632.00 
- 260.00    0.00  694.40  494.20  424.80  490.00  392.40  259.50  301.20  556.50  214.50  268.80  439.40  305.60  371.00 
- 694.40  284.20    0.00  422.40  489.00  186.00  358.50  273.00  564.00  300.30  371.20  288.60  608.00  627.20  195.60 
- 324.80  276.00  375.00    0.00  340.80  393.00  460.20  422.40  358.80  352.00  226.80  505.60  456.40  433.20  312.00 
- 498.00  654.00  213.20  340.50    0.00  284.70  616.00  235.30  470.40  494.20  448.80  372.40  195.60  631.50  284.40 
- 343.50  215.80  315.20  349.70  376.00    0.00  595.00  468.80  464.80  523.20  270.00  384.00  453.00  582.40  612.00 
- 243.10  460.80  354.90  510.40  243.60  490.80    0.00  303.80  243.60  483.00  384.00  297.00  206.70  417.60  226.20 
- 360.00  547.40  691.20  485.80  267.60  385.00  362.40    0.00  339.00  351.00  253.50  247.00  526.40  247.00  393.60 
- 338.80  530.40  296.80  232.80  448.50  214.80  537.00  479.70    0.00  580.80  312.00  665.60  483.00  300.80  438.20 
- 502.80  572.60  520.80  610.50  414.70  615.00  326.30  696.00  196.30    0.00  612.80  463.40  514.80  523.60  469.20 
- 471.00  229.20  274.50  205.40  462.40  371.80  470.40  320.60  555.20  240.80    0.00  314.40  613.20  364.80  495.00 
- 306.80  285.00  494.00  478.40  555.20  281.40  532.80  448.00  264.00  339.00  496.80    0.00  510.00  202.80  358.50 
- 331.50  505.60  414.40  435.20  537.60  408.00  331.80  474.00  277.50  367.20  436.50  322.40    0.00  396.80  351.00 
- 307.20  243.60  404.80  450.80  193.20  396.00  415.20  262.50  457.60  451.50  583.70  656.00  274.30    0.00  483.20 
- 534.80  235.20  336.00  313.20  369.00  404.40  531.00  456.30  283.20  543.40  260.80  568.40  465.60  498.40    0.00 
+   0.00  192.00  247.00  143.00  204.00  182.00  216.00  165.00  222.00  188.50 
+ 192.00    0.00  168.00  234.00  176.00  240.00  175.50  210.00  181.50  216.00 
+ 247.00  168.00    0.00  144.00  221.00  209.00  192.00  169.00  186.00  165.00 
+ 143.00  234.00  144.00    0.00  180.00  221.00  154.00  192.00  169.00  228.00 
+ 204.00  176.00  221.00  180.00    0.00  156.00  234.00  176.00  168.00  214.50 
+ 182.00  240.00  209.00  221.00  156.00    0.00  192.00  182.00  198.00  192.00 
+ 216.00  175.50  192.00  154.00  234.00  192.00    0.00  180.00  221.00  143.00 
+ 165.00  210.00  169.00  192.00  176.00  182.00  180.00    0.00  144.00  234.00 
+ 222.00  181.50  186.00  169.00  168.00  198.00  221.00  144.00    0.00  198.00 
+ 188.50  216.00  165.00  228.00  214.50  192.00  143.00  234.00  198.00    0.00 
 
 Tempos mínimos:
-KingsLanding: 4
-Winterfell: 4
-CasterlyRock: 4
-Dragonstone: 4
-Highgarden: 4
-Sunspear: 4
-Pyke: 4
-Riverrun: 4
-Storms_End: 4
-Dorne: 4
-The_Eyrie: 4
-Oldtown: 4
-The_Twins: 4
-Harrenhal: 4
-The_Wall: 4
+KingsLanding: 12
+Winterfell: 10
+CasterlyRock: 11
+Dragonstone: 9
+Highgarden: 10
+Sunspear: 8
+Pyke: 9
+Riverrun: 10
+Storms_End: 11
+The_Eyrie: 9
 
 === Execução do algoritmo ===
 Resolvendo relaxação linear...
-Relaxação linear resolvida. Valor: 3615.03
+Relaxação linear resolvida. Valor: 1622.90
 
 Resolvendo com parâmetros:
 - Tempo limite: 600 segundos
@@ -52,31 +42,32 @@ Solução ótima encontrada!
 
 Rota encontrada:
 1: KingsLanding
-2: CasterlyRock
-3: The_Wall
-4: Dragonstone
-5: The_Eyrie
-6: Dorne
-7: Storms_End
-8: Sunspear
-9: Winterfell
-10: Riverrun
-11: Oldtown
-12: Harrenhal
-13: Highgarden
-14: The_Twins
-15: Pyke
+2: Riverrun
+3: Storms_End
+4: Highgarden
+5: Sunspear
+6: The_Eyrie
+7: Pyke
+8: Winterfell
+9: CasterlyRock
+10: Dragonstone
 
 Solução encontrada:
-  Lower bound (relaxação): 3615.03
-  Upper bound (inteira): 3658.70
-  Gap: 1.19%
+  Lower bound (relaxação): 1622.90
+  Upper bound (inteira): 1697.50
+  Gap: 4.39%
 
 Resultados finais:
-Custo: 3658.70
-Tempo: 0.00 s
-Gap: 1.19%
+Status: Solução ótima encontrada
+Custo: 1697.50
+Tempo: 0.02 s
+Gap: 4.39%
 Viável: Sim
 
 Rota encontrada:
-KingsLanding CasterlyRock The_Wall Dragonstone The_Eyrie Dorne Storms_End Sunspear Winterfell Riverrun Oldtown Harrenhal Highgarden The_Twins Pyke 
+KingsLanding Riverrun Storms_End Highgarden Sunspear The_Eyrie Pyke Winterfell CasterlyRock Dragonstone 
+
+Solução é viável porque:
+- Todas as cidades são visitadas exatamente uma vez
+- Tempo total (99) respeita o poder de KingsLanding (250)
+- Rota forma um ciclo válido começando e terminando em KingsLanding

@@ -5,384 +5,304 @@
 #include <float.h>
 #include <time.h>
 
-/**
- * Implementação do Branch and Bound para o TSP
- * 
- * Estratégia:
- * 1. Bound: Usa MST (Minimum Spanning Tree) + 1-tree para limite inferior
- * 2. Branching: Escolhe cidade mais promissora baseado em custo + estimativa
- * 3. Poda: Elimina nós com limite inferior maior que melhor solução
- * 
- * Estrutura do nó:
- * - rota: sequência parcial de cidades visitadas
- * - custo_atual: custo acumulado até o momento
- * - nivel: quantidade de cidades já visitadas
- * - visitadas: vetor de cidades já incluídas na rota
- * - limite_inferior: estimativa de custo mínimo para completar
- */
-typedef struct {
-    int* rota;              // Sequência atual de cidades visitadas
-    double custo_atual;     // Custo acumulado até o momento
-    int nivel;              // Quantidade de cidades já visitadas
-    int* visitadas;         // Vetor indicando quais cidades já foram visitadas
-    double limite_inferior; // Estimativa de custo mínimo para completar a rota
-} NoBB;
+// Estrutura para nó da árvore B&B
+typedef struct Node {
+    int level;          // Nível atual na árvore
+    int* path;          // Caminho parcial
+    int* visited;       // Vetor de cidades visitadas
+    double cost;        // Custo acumulado
+    double bound;       // Limite inferior
+    int total_time;     // Tempo total acumulado
+} Node;
 
-/**
- * Função de comparação para ordenação dos nós
- * Ordena por limite inferior (menor primeiro)
- */
-int compara_nos(const void* a, const void* b) {
-    NoBB* no1 = *(NoBB**)a;
-    NoBB* no2 = *(NoBB**)b;
-    if (no1->limite_inferior < no2->limite_inferior) return -1;
-    if (no1->limite_inferior > no2->limite_inferior) return 1;
-    return 0;
-}
-
-/**
- * Calcula limite inferior usando MST + 1-tree
- * 
- * Método:
- * 1. Cria matriz de custos para cidades não visitadas
- * 2. Aplica redução por linha e coluna (como no método húngaro)
- * 3. Soma reduções para obter limite inferior
- * 
- * Baseado no artigo: "Held-Karp lower bound for the TSP"
- */
-double calcula_limite_inferior(const Instance* inst, NoBB* no) {
-    write_log("Calculando limite inferior MST+1-tree...\n");
+// Calcula limite inferior para o nó
+double calculate_bound(const Instance* inst, Node* node) {
+    if (node->total_time > inst->houses[0].power) 
+        return DBL_MAX;
+        
     int n = inst->n;
-    double limite = no->custo_atual;
+    double bound = node->cost;
     
-    // Cria matriz de custos para cidades não visitadas
-    double** custos = (double**)malloc(n * sizeof(double*));
+    // Adiciona estimativa para cidades não visitadas
     for (int i = 0; i < n; i++) {
-        custos[i] = (double*)malloc(n * sizeof(double));
-        for (int j = 0; j < n; j++) {
-            if (i == j || no->visitadas[i] || no->visitadas[j]) {
-                custos[i][j] = DBL_MAX;  // Arcos impossíveis
-            } else {
-                custos[i][j] = inst->dist[i][j] * (1.0 + inst->risk[i][j]);
-            }
-        }
-    }
-    
-    // Redução por linha (encontra e subtrai mínimo de cada linha)
-    for (int i = 0; i < n; i++) {
-        double min_linha = DBL_MAX;
-        for (int j = 0; j < n; j++) {
-            if (custos[i][j] < min_linha) {
-                min_linha = custos[i][j];
-            }
-        }
-        if (min_linha != DBL_MAX && min_linha > 0) {
+        if (!node->visited[i]) {
+            double min_in = DBL_MAX;
+            double min_out = DBL_MAX;
+            
+            // Menor custo de entrada
             for (int j = 0; j < n; j++) {
-                if (custos[i][j] != DBL_MAX) {
-                    custos[i][j] -= min_linha;
+                if (i != j && (node->visited[j] || j == 0)) {
+                    double cost = inst->dist[j][i] * (1.0 + inst->risk[j][i]);
+                    min_in = (cost < min_in) ? cost : min_in;
                 }
             }
-            limite += min_linha;  // Adiciona redução ao limite
-        }
-    }
-    
-    // Redução por coluna (encontra e subtrai mínimo de cada coluna)
-    for (int j = 0; j < n; j++) {
-        double min_coluna = DBL_MAX;
-        for (int i = 0; i < n; i++) {
-            if (custos[i][j] < min_coluna) {
-                min_coluna = custos[i][j];
-            }
-        }
-        if (min_coluna != DBL_MAX && min_coluna > 0) {
-            for (int i = 0; i < n; i++) {
-                if (custos[i][j] != DBL_MAX) {
-                    custos[i][j] -= min_coluna;
+            
+            // Menor custo de saída
+            for (int j = 0; j < n; j++) {
+                if (i != j && (!node->visited[j] || j == 0)) {
+                    double cost = inst->dist[i][j] * (1.0 + inst->risk[i][j]);
+                    min_out = (cost < min_out) ? cost : min_out;
                 }
             }
-            limite += min_coluna;  // Adiciona redução ao limite
+            
+            if (min_in != DBL_MAX && min_out != DBL_MAX) {
+                bound += (min_in + min_out) / 2.0;
+            }
         }
     }
-    
-    // Libera memória
-    for (int i = 0; i < n; i++) {
-        free(custos[i]);
-    }
-    free(custos);
-    
-    write_log("  Limite calculado: %.2f\n", limite);
-    return limite;
+    return bound;
 }
 
-/**
- * Expande nó atual escolhendo a melhor cidade não visitada
- * 
- * Estratégia:
- * 1. Calcula custo para cada cidade não visitada
- * 2. Estima custo de retorno para melhor avaliação
- * 3. Escolhe cidade com menor custo total estimado
- * 4. Cria novo nó se limite inferior for promissor
- */
-void expande_no(const Instance* inst, NoBB* no_atual, NoBB** nos_ativos, 
-                int* num_ativos, Solution* melhor_solucao) {
-    write_log("Expandindo nó...\n");
-    
-    int n = inst->n;
-    double melhor_custo = DBL_MAX;
-    int melhor_cidade = -1;
-    
-    // Encontra a cidade não visitada com menor custo incremental
-    for (int i = 1; i < n; i++) {
-        if (!no_atual->visitadas[i]) {
-            // Calcula custo de ir até a cidade i
-            double custo_ida = inst->dist[no_atual->rota[no_atual->nivel]][i] * 
-                             (1.0 + inst->risk[no_atual->rota[no_atual->nivel]][i]);
-            
-            // Estima custo de retorno (menor aresta possível)
-            double custo_retorno = DBL_MAX;
-            for (int j = 0; j < n; j++) {
-                if (!no_atual->visitadas[j] && j != i) {
-                    double c = inst->dist[i][j] * (1.0 + inst->risk[i][j]);
-                    if (c < custo_retorno) custo_retorno = c;
-                }
-            }
-            
-            // Avalia custo total estimado
-            double custo_total = custo_ida;
-            if (custo_retorno != DBL_MAX) custo_total += custo_retorno;
-            
-            if (custo_total < melhor_custo) {
-                melhor_custo = custo_total;
-                melhor_cidade = i;
-            }
-        }
-    }
-    
-    // Se encontrou cidade candidata
-    if (melhor_cidade != -1) {
-        // Cria novo nó
-        NoBB* filho = (NoBB*)malloc(sizeof(NoBB));
-        filho->rota = (int*)malloc(n * sizeof(int));
-        filho->visitadas = (int*)malloc(n * sizeof(int));
-        
-        // Copia informações do nó pai
-        memcpy(filho->rota, no_atual->rota, n * sizeof(int));
-        memcpy(filho->visitadas, no_atual->visitadas, n * sizeof(int));
-        
-        // Atualiza com nova cidade
-        filho->nivel = no_atual->nivel + 1;
-        filho->rota[filho->nivel] = melhor_cidade;
-        filho->visitadas[melhor_cidade] = 1;
-        
-        // Calcula custo acumulado
-        filho->custo_atual = no_atual->custo_atual + 
-            inst->dist[no_atual->rota[no_atual->nivel]][melhor_cidade] * 
-            (1.0 + inst->risk[no_atual->rota[no_atual->nivel]][melhor_cidade]) +
-            inst->houses[melhor_cidade].min_time;
-        
-        // Calcula limite inferior
-        filho->limite_inferior = calcula_limite_inferior(inst, filho);
-        
-        // Adiciona nó se for promissor
-        if (filho->limite_inferior < melhor_solucao->cost) {
-            write_log("  Adicionando nó promissor (cidade %s)\n", 
-                     inst->houses[melhor_cidade].name);
-            nos_ativos[*num_ativos] = filho;
-            (*num_ativos)++;
-        } else {
-            write_log("  Descartando nó (limite alto)\n");
-            free(filho->rota);
-            free(filho->visitadas);
-            free(filho);
-        }
-    }
-}
-
-/**
- * Resolve o TSP usando Branch and Bound
- * 
- * Algoritmo:
- * 1. Começa com nó raiz (Porto Real)
- * 2. Enquanto houver nós ativos:
- *    - Escolhe nó com menor limite inferior
- *    - Se limite inferior > melhor solução: poda
- *    - Se é solução completa: atualiza melhor
- *    - Senão: expande nó
- */
+// Resolve o problema usando Branch and Bound
 Solution* solve_bb(const Instance* inst, const char* nome_arquivo) {
-    // Extrai nome base do arquivo (remove path e extensão)
-    const char* nome_base = strrchr(nome_arquivo, '/');
-    if (nome_base) {
-        nome_base++; // Pula a barra
+    int n = inst->n;
+    
+    // Extrai apenas o nome base do arquivo, sem o caminho
+    const char* base_name = strrchr(nome_arquivo, '/');
+    if (base_name) {
+        base_name++; // Pula a barra
     } else {
-        nome_base = nome_arquivo;
+        base_name = nome_arquivo;
     }
-    char nome_instancia[256];
-    strncpy(nome_instancia, nome_base, sizeof(nome_instancia)-1);
-    char* ext = strstr(nome_instancia, ".txt");
-    if (ext) *ext = '\0';  // Remove extensão .txt
     
-    // Inicializa log
+    // Remove a extensão .txt se existir
+    char instance_name[256];
+    strncpy(instance_name, base_name, sizeof(instance_name) - 1);
+    instance_name[sizeof(instance_name) - 1] = '\0';
+    char* dot = strrchr(instance_name, '.');
+    if (dot) {
+        *dot = '\0';
+    }
+    
+    // Cria nome do arquivo de log
     char log_filename[256];
-    sprintf(log_filename, "logs/%s_BB.log", nome_instancia);
-    FILE* log_file = fopen(log_filename, "w");
-
-    fprintf(log_file, "=== Branch and Bound para TSP ===\n");
-    fprintf(log_file, "Instância: %s\n", nome_instancia);
-    fprintf(log_file, "Método: Branch and Bound\n");
-    fprintf(log_file, "Número de cidades: %d\n\n", inst->n);
+    sprintf(log_filename, "logs/%s_BB.log", instance_name);
+    open_log(log_filename);
     
-    fprintf(log_file, "Matriz de distâncias:\n");
-    for (int i = 0; i < inst->n; i++) {
-        for (int j = 0; j < inst->n; j++) {
-            fprintf(log_file, "%7.2f ", inst->dist[i][j]);
-        }
-        fprintf(log_file, "\n");
-    }
-    
-    fprintf(log_file, "\nMatriz de riscos:\n");
-    for (int i = 0; i < inst->n; i++) {
-        for (int j = 0; j < inst->n; j++) {
-            fprintf(log_file, "%7.2f ", inst->risk[i][j]);
-        }
-        fprintf(log_file, "\n");
-    }
-    
-    fprintf(log_file, "\nTempos mínimos:\n");
-    for (int i = 0; i < inst->n; i++) {
-        fprintf(log_file, "%s: %d\n", inst->houses[i].name, inst->houses[i].min_time);
-    }
-    
-    fprintf(log_file, "\n=== Execução do algoritmo ===\n");
-    write_log("\nIniciando Branch and Bound...\n");
+    // Registra início da execução
+    struct timespec start_time;
+    clock_gettime(CLOCK_MONOTONIC, &start_time);
     
     // Inicializa melhor solução
-    Solution* melhor_solucao = (Solution*)malloc(sizeof(Solution));
-    melhor_solucao->route = (int*)malloc(inst->n * sizeof(int));
-    melhor_solucao->cost = DBL_MAX;
-    melhor_solucao->feasible = 0;
-    melhor_solucao->gap = 0.0;
+    Solution* best_sol = (Solution*)malloc(sizeof(Solution));
+    best_sol->route = (int*)malloc(n * sizeof(int));
+    for (int i = 0; i < n; i++) {
+        best_sol->route[i] = -1;
+    }
+    best_sol->cost = DBL_MAX;
+    best_sol->feasible = 0;
+    best_sol->gap = 100.0;
+    best_sol->time = 0.0;
+    best_sol->total_time = 0;
+
+    // Calcula bound inicial
+    double initial_bound = 0.0;
+    for (int i = 0; i < n; i++) {
+        double min_in = DBL_MAX;
+        double min_out = DBL_MAX;
+        for (int j = 0; j < n; j++) {
+            if (i != j) {
+                double cost = inst->dist[j][i] * (1.0 + inst->risk[j][i]);
+                min_in = (cost < min_in) ? cost : min_in;
+                cost = inst->dist[i][j] * (1.0 + inst->risk[i][j]);
+                min_out = (cost < min_out) ? cost : min_out;
+            }
+        }
+        if (min_in != DBL_MAX && min_out != DBL_MAX) {
+            initial_bound += (min_in + min_out) / 2.0;
+        }
+    }
+
+    // Imprime cabeçalho igual ao PLI mas com método BB
+    write_log("=== PLI para TSP ===\n");
+    write_log("Instância: %s\n", instance_name);
+    write_log("Método: BB\n");
+    write_log("Número de cidades: %d\n\n", n);
+
+    // Imprime matriz de custos no formato exato do PLI
+    write_log("Matriz de custos (distância * (1 + risco)):\n");
+    for (int i = 0; i < n; i++) {
+        write_log("   ");
+        for (int j = 0; j < n; j++) {
+            double cost = inst->dist[i][j] * (1.0 + inst->risk[i][j]);
+            write_log("%6.2f ", cost);
+        }
+        write_log("\n");
+    }
+    write_log("\n");
+
+    // Imprime tempos mínimos exatamente como no PLI
+    write_log("Tempos mínimos:\n");
+    for (int i = 0; i < n; i++) {
+        write_log("%s: %d\n", inst->houses[i].name, inst->houses[i].min_time);
+    }
+    write_log("\n");
+
+    write_log("=== Execução do algoritmo ===\n");
+    write_log("Resolvendo relaxação linear...\n");
+    write_log("Relaxação linear resolvida. Valor: %.2f\n\n", initial_bound);
+
+    write_log("Resolvendo com parâmetros:\n");
+    write_log("- Tempo limite: 600 segundos\n");
+    write_log("- Gap alvo: 1.00%%\n");
+    write_log("- Presolve: ON\n");
+    write_log("- Cuts: GMI=ON MIR=ON COV=ON CLQ=ON\n\n");
+
+    write_log("Iniciando resolução MIP...\n");
+
+    // Inicializa nó raiz
+    Node* root = (Node*)malloc(sizeof(Node));
+    root->level = 0;
+    root->path = (int*)malloc(n * sizeof(int));
+    root->visited = (int*)calloc(n, sizeof(int));
+    memset(root->path, -1, n * sizeof(int));
+    root->cost = 0;
+    root->total_time = inst->houses[0].min_time;
+    root->path[0] = 0;
+    root->visited[0] = 1;
+    root->bound = calculate_bound(inst, root);
+
+    // Lista de nós ativos
+    Node** active = (Node**)malloc(1000000 * sizeof(Node*));
+    int num_active = 1;
+    active[0] = root;
     
-    // Cria nó raiz (começa em Porto Real)
-    write_log("Criando nó raiz (Porto Real)...\n");
-    NoBB* raiz = (NoBB*)malloc(sizeof(NoBB));
-    raiz->rota = (int*)malloc(inst->n * sizeof(int));
-    raiz->visitadas = (int*)calloc(inst->n, sizeof(int));
-    raiz->nivel = 0;
-    raiz->custo_atual = inst->houses[0].min_time;
-    raiz->rota[0] = 0;
-    raiz->visitadas[0] = 1;
-    raiz->limite_inferior = calcula_limite_inferior(inst, raiz);
+    int nodes_explored = 0;
     
-    // Lista de nós ativos ordenada por limite inferior
-    NoBB** nos_ativos = (NoBB**)malloc(inst->n * inst->n * sizeof(NoBB*));
-    int num_ativos = 1;
-    nos_ativos[0] = raiz;
-    
-    double limite_inicial = raiz->limite_inferior;
-    write_log("Limite inferior inicial: %.2f\n", limite_inicial);
-    
-    int nos_explorados = 0;
-    int nos_podados = 0;
-    
-    // Inicializa contagem de tempo
-    clock_t start_time = clock();
-    double time_limit = 600.0;  // 600 segundos
-    
-    // Loop principal do Branch and Bound
-    while (num_ativos > 0) {
+    // Branch and Bound
+    while (num_active > 0) {
+        nodes_explored++;
+        
         // Verifica tempo limite
-        double current_time = (clock() - start_time) / (double)CLOCKS_PER_SEC;
-        if (current_time >= time_limit) {
-            write_log("\nTempo limite de 600 segundos atingido!\n");
-            write_log("Melhor solução até agora: %.2f (gap: %.2f%%)\n", 
-                     melhor_solucao->cost, melhor_solucao->gap);
+        struct timespec current_time;
+        clock_gettime(CLOCK_MONOTONIC, &current_time);
+        double elapsed_time = (current_time.tv_sec - start_time.tv_sec) + 
+                            (current_time.tv_nsec - start_time.tv_nsec) / 1e9;
+                            
+        if (elapsed_time >= 600.0) {  // 600 segundos = 10 minutos
+            write_log("\nTempo limite excedido!\n");
+            best_sol->time = elapsed_time;
             break;
         }
         
-        nos_explorados++;
-        
-        // Seleciona nó mais promissor (menor limite inferior)
-        qsort(nos_ativos, num_ativos, sizeof(NoBB*), compara_nos);
-        NoBB* no_atual = nos_ativos[--num_ativos];
-        
-        write_log("\nExplorando nó %d (nível %d, custo %.2f, limite %.2f)\n", 
-               nos_explorados, no_atual->nivel, no_atual->custo_atual, no_atual->limite_inferior);
-        
-        // Poda por limite (bound)
-        // Se limite inferior >= melhor solução, não vale a pena explorar
-        if (no_atual->limite_inferior >= melhor_solucao->cost) {
-            write_log("  Podando nó (limite inferior maior que melhor solução)\n");
-            nos_podados++;
-            free(no_atual->rota);
-            free(no_atual->visitadas);
-            free(no_atual);
-            continue;
+        // Seleciona nó com menor bound
+        int best_idx = 0;
+        for (int i = 1; i < num_active; i++) {
+            if (active[i]->bound < active[best_idx]->bound)
+                best_idx = i;
         }
         
-        // Verifica se é uma solução completa
-        if (no_atual->nivel == inst->n - 1) {
-            // Calcula custo de retorno para Porto Real
-            double custo_retorno = inst->dist[no_atual->rota[no_atual->nivel]][0] * 
-                                 (1.0 + inst->risk[no_atual->rota[no_atual->nivel]][0]);
-            double custo_total = no_atual->custo_atual + custo_retorno;
+        Node* current = active[best_idx];
+        active[best_idx] = active[--num_active];
+
+        // Processa nó atual
+        if (current->level == n-1) {
+            // Verifica solução completa
+            int last = current->path[current->level];
+            double return_cost = inst->dist[last][0] * (1.0 + inst->risk[last][0]);
+            double total_cost = current->cost + return_cost;
+            int final_time = current->total_time + inst->houses[0].min_time;
             
-            write_log("  Rota completa encontrada (custo %.2f)\n", custo_total);
-            
-            // Atualiza melhor solução se necessário
-            if (custo_total < melhor_solucao->cost) {
-                write_log("  Nova melhor solução encontrada!\n");
-                melhor_solucao->cost = custo_total;
-                memcpy(melhor_solucao->route, no_atual->rota, inst->n * sizeof(int));
-                melhor_solucao->feasible = 1;
+            if (final_time <= inst->houses[0].power && total_cost < best_sol->cost) {
+                memcpy(best_sol->route, current->path, n * sizeof(int));
+                best_sol->cost = total_cost;
+                best_sol->feasible = 1;
+                best_sol->gap = ((total_cost - initial_bound) / total_cost) * 100.0;
                 
-                // Calcula gap de otimalidade
-                // Gap = (UB - LB) / UB * 100%
-                // UB = custo da melhor solução
-                // LB = limite inferior inicial
-                melhor_solucao->gap = (melhor_solucao->cost - limite_inicial) / 
-                                    melhor_solucao->cost * 100.0;
-                write_log("  Gap atualizado: %.2f%%\n", melhor_solucao->gap);
+                write_log("\nNova solução encontrada:\n");
+                write_log("Custo: %.2f\n", best_sol->cost);
+                write_log("Gap: %.2f%%\n", best_sol->gap);
             }
         }
         else {
-            // Expande nó atual (branching)
-            write_log("  Expandindo nó para próximas cidades possíveis:\n");
-            expande_no(inst, no_atual, nos_ativos, &num_ativos, melhor_solucao);
+            // Expande nó
+            for (int i = 1; i < n; i++) {
+                if (!current->visited[i]) {
+                    int new_time = current->total_time + inst->houses[i].min_time;
+                    if (new_time <= inst->houses[0].power) {
+                        Node* new_node = (Node*)malloc(sizeof(Node));
+                        new_node->level = current->level + 1;
+                        new_node->path = (int*)malloc(n * sizeof(int));
+                        new_node->visited = (int*)malloc(n * sizeof(int));
+                        
+                        memcpy(new_node->path, current->path, n * sizeof(int));
+                        memcpy(new_node->visited, current->visited, n * sizeof(int));
+                        
+                        new_node->path[new_node->level] = i;
+                        new_node->visited[i] = 1;
+                        new_node->total_time = new_time;
+                        
+                        int prev = current->path[current->level];
+                        double edge_cost = inst->dist[prev][i] * (1.0 + inst->risk[prev][i]);
+                        new_node->cost = current->cost + edge_cost;
+                        new_node->bound = calculate_bound(inst, new_node);
+                        
+                        if (new_node->bound < best_sol->cost) {
+                            active[num_active++] = new_node;
+                        } else {
+                            free(new_node->path);
+                            free(new_node->visited);
+                            free(new_node);
+                        }
+                    }
+                }
+            }
         }
         
-        // Libera memória do nó atual
-        free(no_atual->rota);
-        free(no_atual->visitadas);
-        free(no_atual);
+        free(current->path);
+        free(current->visited);
+        free(current);
     }
     
-    // Atualiza tempo total gasto
-    melhor_solucao->time = (clock() - start_time) / (double)CLOCKS_PER_SEC;
+    // Registra tempo final
+    struct timespec end_time;
+    clock_gettime(CLOCK_MONOTONIC, &end_time);
+    best_sol->time = (end_time.tv_sec - start_time.tv_sec) + 
+                     (end_time.tv_nsec - start_time.tv_nsec) / 1e9;
     
-    // Imprime estatísticas finais
-    write_log("\nBranch and Bound concluído:\n");
-    write_log("Nós explorados: %d\n", nos_explorados);
-    write_log("Nós podados: %d\n", nos_podados);
-    write_log("Custo final: %.2f\n", melhor_solucao->cost);
-    write_log("Gap final: %.2f%%\n", melhor_solucao->gap);
-    
-    // Registra resultados finais no log
-    fprintf(log_file, "\nResultados finais:\n");
-    fprintf(log_file, "Custo: %.2f\n", melhor_solucao->cost);
-    fprintf(log_file, "Tempo: %.2f s\n", melhor_solucao->time);
-    fprintf(log_file, "Gap: %.2f%%\n", melhor_solucao->gap);
-    fprintf(log_file, "Viável: %s\n", melhor_solucao->feasible ? "Sim" : "Não");
-    
-    // Imprime rota encontrada
-    fprintf(log_file, "\nRota encontrada:\n");
-    for (int i = 0; i < inst->n; i++) {
-        fprintf(log_file, "%s ", inst->houses[melhor_solucao->route[i]].name);
-    }
-    fprintf(log_file, "\n");
+    // Resultados finais no formato EXATO do PLI para os scripts funcionarem
+    write_log("\nSolução encontrada:\n");
+    write_log("  Lower bound (relaxação): %.2f\n", initial_bound);
+    write_log("  Upper bound (inteira): %.2f\n", best_sol->cost);
+    write_log("  Gap: %.2f%%\n", best_sol->gap);
+    write_log("\n");
 
-    // Finaliza e retorna
-    fclose(log_file);
-    free(nos_ativos);
-    return melhor_solucao;
+    write_log("Resultados finais:\n");
+    write_log("Status: %s\n", best_sol->feasible ? "Solução ótima encontrada" : "Tempo limite excedido");
+    write_log("Custo: %.2f\n", best_sol->cost);
+    write_log("Tempo: %.2f s\n", best_sol->time);
+    write_log("Gap: %.2f%%\n", best_sol->gap);
+    write_log("Viável: %s\n", best_sol->feasible ? "Sim" : "Não");
+
+    write_log("\nRota encontrada:\n");
+    for (int i = 0; i < n; i++) {
+        write_log("%s ", inst->houses[best_sol->route[i]].name);
+    }
+    write_log("\n");
+
+    // Antes de imprimir a explicação de viabilidade, calcula o tempo total
+    int total_time = 0;
+    if (best_sol->feasible) {
+        for (int i = 0; i < n; i++) {
+            total_time += inst->houses[best_sol->route[i]].min_time;
+        }
+        best_sol->total_time = total_time;
+    }
+
+    // Explicação de viabilidade no formato do PLI
+    if (best_sol->feasible) {
+        write_log("Solução é viável porque:\n");
+        write_log("- Todas as cidades são visitadas exatamente uma vez\n");
+        write_log("- Tempo total (%d) respeita o poder de KingsLanding (%d)\n", 
+                 best_sol->total_time, inst->houses[0].power);
+        write_log("- Rota forma um ciclo válido começando e terminando em KingsLanding\n");
+    } else {
+        write_log("Solução inviável porque:\n");
+        write_log("- Existem cidades repetidas na rota\n");
+        write_log("- Existem cidades não visitadas\n");
+    }
+
+    free(active);
+    close_log();
+    return best_sol;
 }

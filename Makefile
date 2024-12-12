@@ -8,16 +8,18 @@ UNAME_S := $(shell uname -s)
 ifeq ($(UNAME_S),Darwin)
     GLPK_CFLAGS = -I/opt/homebrew/include
     GLPK_LIBS = -L/opt/homebrew/lib -lglpk
+    TIME_LIBS = 
 else
     # Para Linux e outros, usa pkg-config
     GLPK_CFLAGS = $(shell pkg-config --cflags glpk)
     GLPK_LIBS = $(shell pkg-config --libs glpk)
+    TIME_LIBS = -lrt
 endif
 
 all: tsp_bb tsp_mip
 
 tsp_bb: src/main.c src/tsp_bb.c src/tsp_common.c
-	$(CC) $(CFLAGS) -DUSE_BB -o tsp_bb src/main.c src/tsp_bb.c src/tsp_common.c
+	$(CC) $(CFLAGS) -DUSE_BB -o tsp_bb src/main.c src/tsp_bb.c src/tsp_common.c $(TIME_LIBS)
 
 tsp_mip: src/main.c src/tsp_mip.c src/tsp_common.c
 	$(CC) $(CFLAGS) $(GLPK_CFLAGS) -o tsp_mip src/main.c src/tsp_mip.c src/tsp_common.c $(GLPK_LIBS)

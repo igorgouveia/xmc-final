@@ -3,44 +3,20 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Variáveis globais para log
-static FILE* log_file = NULL;
-static int logging_enabled = 0;
-static int terminal_output = 0;  // Controla saída no terminal
+// Inicialização da variável global
+FILE* log_file = NULL;
 
-void init_log(const char* instance_name, const char* method) {
-    if (log_file) {
-        fclose(log_file);
-    }
-    
-    // Cria diretório logs se não existir
-    system("mkdir -p logs");
-    
-    // Cria nome do arquivo de log
-    char log_filename[256];
-    sprintf(log_filename, "logs/%s_%s.log", instance_name, method);
-    
-    log_file = fopen(log_filename, "w");
-    logging_enabled = (log_file != NULL);
-}
-
+// Implementação da função write_log
 void write_log(const char* format, ...) {
     va_list args;
     
-    // Verifica se é mensagem inicial ou final
-    terminal_output = (strstr(format, "Iniciando") || 
-                      strstr(format, "Branch and Bound concluído") ||
-                      strstr(format, "PLI concluído"));
+    // Remove o print na tela
+    // va_start(args, format);
+    // vprintf(format, args);
+    // va_end(args);
     
-    if (terminal_output) {
-        // Escreve no terminal
-        va_start(args, format);
-        vprintf(format, args);
-        va_end(args);
-    }
-    
-    // Sempre escreve no arquivo de log
-    if (logging_enabled && log_file) {
+    // Mantém a escrita no arquivo de log
+    if (log_file) {
         va_start(args, format);
         vfprintf(log_file, format, args);
         va_end(args);
@@ -48,12 +24,21 @@ void write_log(const char* format, ...) {
     }
 }
 
+// Função para abrir arquivo de log
+void open_log(const char* filename) {
+    log_file = fopen(filename, "w");
+    if (!log_file) {
+        printf("Erro ao abrir arquivo de log: %s\n", filename);
+        exit(1);
+    }
+}
+
+// Função para fechar arquivo de log
 void close_log() {
     if (log_file) {
         fclose(log_file);
         log_file = NULL;
     }
-    logging_enabled = 0;
 }
 
 // Função para ler instância do arquivo
@@ -179,4 +164,65 @@ void free_solution(Solution* sol) {
     if (!sol) return;
     free(sol->route);
     free(sol);
+}
+
+// Função para explicar viabilidade
+void explain_feasibility(const Instance* inst, const Solution* sol, FILE* log_file) {
+    if (!sol->feasible) {
+        fprintf(log_file, "\nSolução inviável porque:\n");
+        
+        // Verifica se todos os nós foram visitados
+        int has_repeated = 0;
+        int has_missing = 0;
+        int* visits = (int*)calloc(inst->n, sizeof(int));
+        
+        for (int i = 0; i < inst->n; i++) {
+            if (sol->route[i] >= 0 && sol->route[i] < inst->n) {
+                visits[sol->route[i]]++;
+                if (visits[sol->route[i]] > 1) {
+                    has_repeated = 1;
+                }
+            }
+        }
+        
+        for (int i = 0; i < inst->n; i++) {
+            if (visits[i] == 0) {
+                has_missing = 1;
+            }
+        }
+        
+        if (has_repeated) {
+            fprintf(log_file, "- Existem cidades repetidas na rota\n");
+        }
+        if (has_missing) {
+            fprintf(log_file, "- Existem cidades não visitadas\n");
+        }
+        
+        // Verifica tempo total
+        int total_time = 0;
+        for (int i = 0; i < inst->n; i++) {
+            if (sol->route[i] >= 0 && sol->route[i] < inst->n) {
+                total_time += inst->houses[sol->route[i]].min_time;
+            }
+        }
+        
+        if (total_time > inst->houses[0].power) {
+            fprintf(log_file, "- Tempo total (%d) excede o poder de KingsLanding (%d)\n", 
+                    total_time, inst->houses[0].power);
+        }
+        
+        free(visits);
+    } else {
+        fprintf(log_file, "\nSolução é viável porque:\n");
+        fprintf(log_file, "- Todas as cidades são visitadas exatamente uma vez\n");
+        
+        int total_time = 0;
+        for (int i = 0; i < inst->n; i++) {
+            total_time += inst->houses[sol->route[i]].min_time;
+        }
+        
+        fprintf(log_file, "- Tempo total (%d) respeita o poder de KingsLanding (%d)\n",
+                total_time, inst->houses[0].power);
+        fprintf(log_file, "- Rota forma um ciclo válido começando e terminando em KingsLanding\n");
+    }
 } 

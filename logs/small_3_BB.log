@@ -1,45 +1,53 @@
-=== Branch and Bound para TSP ===
+=== PLI para TSP ===
 Instância: small_3
-Método: Branch and Bound
-Número de cidades: 8
+Método: BB
+Número de cidades: 5
 
-Matriz de distâncias:
-   0.00  100.00  150.00   50.00  200.00  300.00  250.00  120.00 
- 100.00    0.00  180.00  140.00  250.00  400.00  200.00   80.00 
- 150.00  180.00    0.00  160.00  100.00  350.00  180.00  130.00 
-  50.00  140.00  160.00    0.00  180.00  280.00  220.00  110.00 
- 200.00  250.00  100.00  180.00    0.00  220.00  300.00  180.00 
- 300.00  400.00  350.00  280.00  220.00    0.00  450.00  350.00 
- 250.00  200.00  180.00  220.00  300.00  450.00    0.00  150.00 
- 120.00   80.00  130.00  110.00  180.00  350.00  150.00    0.00 
-
-Matriz de riscos:
-   0.00    0.20    0.30    0.10    0.40    0.50    0.40    0.20 
-   0.20    0.00    0.30    0.20    0.40    0.60    0.30    0.10 
-   0.30    0.30    0.00    0.30    0.20    0.50    0.30    0.20 
-   0.10    0.20    0.30    0.00    0.30    0.40    0.40    0.20 
-   0.40    0.40    0.20    0.30    0.00    0.30    0.50    0.30 
-   0.50    0.60    0.50    0.40    0.30    0.00    0.70    0.60 
-   0.40    0.30    0.30    0.40    0.50    0.70    0.00    0.20 
-   0.20    0.10    0.20    0.20    0.30    0.60    0.20    0.00 
+Matriz de custos (distância * (1 + risco)):
+     0.00 172.50 250.00 143.00 216.00 
+   172.50   0.00 168.00 212.50 176.00 
+   250.00 168.00   0.00 138.00 237.50 
+   143.00 212.50 138.00   0.00 180.00 
+   216.00 176.00 237.50 180.00   0.00 
 
 Tempos mínimos:
-KingsLanding: 4
-Winterfell: 6
-CasterlyRock: 8
-Dragonstone: 4
-Highgarden: 6
-Sunspear: 6
-Pyke: 4
-Riverrun: 4
+KingsLanding: 12
+Winterfell: 8
+CasterlyRock: 9
+Dragonstone: 7
+Highgarden: 10
 
 === Execução do algoritmo ===
+Resolvendo relaxação linear...
+Relaxação linear resolvida. Valor: 763.00
+
+Resolvendo com parâmetros:
+- Tempo limite: 600 segundos
+- Gap alvo: 1.00%
+- Presolve: ON
+- Cuts: GMI=ON MIR=ON COV=ON CLQ=ON
+
+Iniciando resolução MIP...
+
+Nova solução encontrada:
+Custo: 841.00
+Gap: 9.27%
+
+Solução encontrada:
+  Lower bound (relaxação): 763.00
+  Upper bound (inteira): 841.00
+  Gap: 9.27%
 
 Resultados finais:
-Custo: 2330.00
+Status: Solução ótima encontrada
+Custo: 841.00
 Tempo: 0.00 s
-Gap: 43.35%
+Gap: 9.27%
 Viável: Sim
 
 Rota encontrada:
-KingsLanding Dragonstone Riverrun CasterlyRock Highgarden Winterfell Pyke Sunspear 
+KingsLanding Dragonstone CasterlyRock Winterfell Highgarden 
+Solução é viável porque:
+- Todas as cidades são visitadas exatamente uma vez
+- Tempo total (46) respeita o poder de KingsLanding (150)
+- Rota forma um ciclo válido começando e terminando em KingsLanding

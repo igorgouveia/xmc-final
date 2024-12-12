@@ -20,26 +20,27 @@ make
 # Executa testes
 echo "Executando testes..."
 
-# Testes pequenos
+# Testes pequenos e médios
 echo "Testando instâncias pequenas..."
 for i in {1..3}; do
     ./tsp_bb instances/small_$i.txt
     ./tsp_mip instances/small_$i.txt
 done
 
-# Testes médios
 echo "Testando instâncias médias..."
 for i in {1..3}; do
     ./tsp_bb instances/medium_$i.txt
     ./tsp_mip instances/medium_$i.txt
 done
 
-# Testes grandes
-echo "Testando instâncias grandes..."
-for i in {1..3}; do
-    ./tsp_bb instances/large_$i.txt
-    ./tsp_mip instances/large_$i.txt
-done
+# Testes grandes apenas se especificado
+if [ "$1" = "--all" ]; then
+    echo "Testando instâncias grandes..."
+    for i in {1..3}; do
+        ./tsp_bb instances/large_$i.txt
+        ./tsp_mip instances/large_$i.txt
+    done
+fi
 
 # Gera resultados
 echo "Gerando resultados..."

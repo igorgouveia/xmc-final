@@ -16,21 +16,18 @@ int main(int argc, char** argv) {
     }
     
     // Resolve
-    clock_t start = clock();
     Solution* sol;
     
     #ifdef USE_BB
     sol = solve_bb(inst, argv[1]);
     #else
+    clock_t start = clock();
     sol = solve_mip(inst, argv[1]);
-    #endif
-    
     clock_t end = clock();
-    
-    // Atualiza tempo
     if (sol) {
         sol->time = ((double)(end - start)) / CLOCKS_PER_SEC;
     }
+    #endif
     
     // Imprime resultado
     printf("Instância: %s\n", argv[1]);

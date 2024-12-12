@@ -237,10 +237,14 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
     // Atualiza tempo total gasto
     solucao->time = (clock() - start_time) / (double)CLOCKS_PER_SEC;
     
+    // Define status da solução
+    const char* status_str;
     if (err == 0) {
         if (glp_mip_status(prob) == GLP_OPT) {
+            status_str = "Solução ótima encontrada";
             fprintf(log_file, "Solução ótima encontrada!\n");
         } else {
+            status_str = "Solução viável (não ótima)";
             fprintf(log_file, "Solução viável encontrada (não ótima)\n");
         }
         
@@ -270,13 +274,16 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
         fprintf(log_file, "  Upper bound (inteira): %.2f\n", ub);
         fprintf(log_file, "  Gap: %.2f%%\n", solucao->gap);
     } else if (solucao->time >= 600.0) {
+        status_str = "Tempo limite excedido";
         fprintf(log_file, "Tempo limite de 600 segundos atingido!\n");
         if (glp_mip_status(prob) == GLP_FEAS) {
+            status_str = "Solução viável encontrada antes do timeout";
             fprintf(log_file, "Solução viável encontrada antes do timeout\n");
             solucao->feasible = 1;
             solucao->cost = glp_mip_obj_val(prob);
         }
     } else {
+        status_str = "Erro na otimização";
         fprintf(log_file, "Erro na otimização MIP: %d\n", err);
     }
     
@@ -292,6 +299,7 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
 
     // Registra resultados finais no log
     fprintf(log_file, "\nResultados finais:\n");
+    fprintf(log_file, "Status: %s\n", status_str);
     fprintf(log_file, "Custo: %.2f\n", solucao->cost);
     fprintf(log_file, "Tempo: %.2f s\n", solucao->time);
     fprintf(log_file, "Gap: %.2f%%\n", solucao->gap);
@@ -302,7 +310,10 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
         fprintf(log_file, "%s ", inst->houses[solucao->route[i]].name);
     }
     fprintf(log_file, "\n");
-
+    
+    // Adiciona explicação de viabilidade
+    explain_feasibility(inst, solucao, log_file);
+    
     fclose(log_file);
     return solucao;
 } 

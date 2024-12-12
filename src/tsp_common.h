@@ -2,45 +2,54 @@
 #define TSP_COMMON_H
 
 #include <stdio.h>
-#include <stdarg.h>  // Para va_list, va_start, va_end
+#include <stdarg.h>
 
-// Estruturas de dados para o Problema do Emissário de Westeros
+// Estrutura para representar uma casa
 typedef struct {
-    char name[50];
+    char name[100];
     int power;
     double loyalty;
     int min_time;
 } House;
 
+// Estrutura para representar uma instância
 typedef struct {
-    int n;           // Número de casas
-    House* houses;   // Vetor de casas
-    double** dist;   // Matriz de distâncias
-    double** risk;   // Matriz de riscos [0,1]
+    int n;
+    House* houses;
+    double** dist;
+    double** risk;
 } Instance;
 
+// Estrutura para representar uma solução
 typedef struct {
-    int* route;      // Rota encontrada
-    double cost;     // Custo total
-    int feasible;    // Solução viável?
-    double gap;      // Gap de otimalidade
-    double time;     // Tempo de execução (adicionado)
+    int* route;
+    double cost;
+    double time;
+    double gap;
+    int feasible;
+    int total_time;
 } Solution;
 
-// Funções comuns
+// Variável global para arquivo de log
+FILE* log_file;  // Removido o extern
+
+// Funções de log
+void write_log(const char* format, ...);
+void open_log(const char* filename);
+void close_log(void);
+
+// Funções de solução
+Solution* solve_bb(const Instance* inst, const char* nome_arquivo);  // Adicionado
+Solution* solve_mip(const Instance* inst, const char* nome_arquivo); // Adicionado
+
+// Outras funções
 Instance* read_instance(const char* filename);
 void write_solution(const char* filename, const Solution* sol, const Instance* inst);
 double calculate_cost(const Instance* inst, const int* route);
 void free_instance(Instance* inst);
 void free_solution(Solution* sol);
 
-// Funções de solução
-Solution* solve_bb(const Instance* inst, const char* nome_arquivo);  // Branch and Bound
-Solution* solve_mip(const Instance* inst, const char* nome_arquivo); // PLI
-
-// Funções para log
-void init_log(const char* instance_name, const char* method);
-void write_log(const char* format, ...);
-void close_log();
+// Adicionar ao header:
+void explain_feasibility(const Instance* inst, const Solution* sol, FILE* log_file);
 
 #endif

@@ -19,7 +19,8 @@ def processa_logs():
                         nome_instancia = nome_instancia.replace('.txt', '')
                         dados['Instância'] = nome_instancia
                     elif 'Método:' in linha:
-                        dados['Método'] = 'BB' if 'Branch' in linha else 'PLI'
+                        # Ajuste aqui: identifica BB ou PLI diretamente do texto
+                        dados['Método'] = linha.split(':')[1].strip()
                     elif 'Resultados finais' in linha:
                         resultados_finais = True
                     elif resultados_finais and 'Custo:' in linha:
