@@ -1,5 +1,6 @@
 === Branch and Bound para TSP ===
 Instância: small_1
+<<<<<<< HEAD
 Método: BB
 Número de cidades: 5
 
@@ -9,6 +10,24 @@ Matriz de custos (distância * (1 + risco)):
    195.00 108.00   0.00  84.00 169.00 
     88.00 182.00  84.00   0.00 120.00 
    144.00 121.00 169.00 120.00   0.00 
+=======
+Método: Branch and Bound
+Número de cidades: 5
+
+Matriz de distâncias:
+   0.00  100.00  150.00   80.00  120.00 
+ 100.00    0.00   90.00  140.00  110.00 
+ 150.00   90.00    0.00   70.00  130.00 
+  80.00  140.00   70.00    0.00  100.00 
+ 120.00  110.00  130.00  100.00    0.00 
+
+Matriz de riscos:
+   0.00    0.20    0.30    0.10    0.20 
+   0.20    0.00    0.20    0.30    0.10 
+   0.30    0.20    0.00    0.20    0.30 
+   0.10    0.30    0.20    0.00    0.20 
+   0.20    0.10    0.30    0.20    0.00 
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7
 
 Tempos mínimos:
 KingsLanding: 5
@@ -138,15 +157,24 @@ Solução encontrada:
   Gap: 1.01%
 
 Resultados finais:
+<<<<<<< HEAD
 Status: Solução ótima encontrada
 Custo: 545.00
 Tempo: 0.00 s
 Gap: 1.01%
+=======
+Custo: 564.00
+Tempo: 0.00 s
+Gap: 26.42%
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7
 Viável: Sim
 
 Rota encontrada:
 KingsLanding Dragonstone CasterlyRock Winterfell Highgarden 
+<<<<<<< HEAD
 Solução é viável porque:
 - Todas as cidades são visitadas exatamente uma vez
 - Tempo total (19) respeita o poder de KingsLanding (100)
 - Rota forma um ciclo válido começando e terminando em KingsLanding
+=======
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7

@@ -4,6 +4,7 @@ Método: PLI
 Número de cidades: 10
 
 Matriz de custos (distância * (1 + risco)):
+<<<<<<< HEAD
    0.00  192.00  247.00  143.00  204.00  182.00  216.00  165.00  222.00  188.50 
  192.00    0.00  168.00  234.00  176.00  240.00  175.50  210.00  181.50  216.00 
  247.00  168.00    0.00  144.00  221.00  209.00  192.00  169.00  186.00  165.00 
@@ -30,6 +31,34 @@ The_Eyrie: 9
 === Execução do algoritmo ===
 Resolvendo relaxação linear...
 Relaxação linear resolvida. Valor: 1622.90
+=======
+   0.00  144.00  195.00   88.00  132.00  117.00  156.00  110.00  168.00  123.50 
+ 144.00    0.00  108.00  182.00  121.00  192.00  110.50  156.00  132.00  168.00 
+ 195.00  108.00    0.00   84.00  169.00  165.00  144.00  104.00  132.00  110.00 
+  88.00  182.00   84.00    0.00  120.00  169.00   99.00  144.00  104.00  180.00 
+ 132.00  121.00  169.00  120.00    0.00   96.00  182.00  121.00  108.00  156.00 
+ 117.00  192.00  165.00  169.00   96.00    0.00  144.00  117.00  154.00  132.00 
+ 156.00  110.50  144.00   99.00  182.00  144.00    0.00  120.00  169.00   88.00 
+ 110.00  156.00  104.00  144.00  121.00  117.00  120.00    0.00   84.00  182.00 
+ 168.00  132.00  132.00  104.00  108.00  154.00  169.00   84.00    0.00  144.00 
+ 123.50  168.00  110.00  180.00  156.00  132.00   88.00  182.00  144.00    0.00 
+
+Tempos mínimos:
+KingsLanding: 10
+Winterfell: 8
+CasterlyRock: 7
+Dragonstone: 6
+Highgarden: 7
+Sunspear: 5
+Pyke: 6
+Riverrun: 7
+Storms_End: 8
+The_Eyrie: 6
+
+=== Execução do algoritmo ===
+Resolvendo relaxação linear...
+Relaxação linear resolvida. Valor: 1011.90
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7
 
 Resolvendo com parâmetros:
 - Tempo limite: 600 segundos
@@ -38,6 +67,7 @@ Resolvendo com parâmetros:
 - Cuts: GMI=ON MIR=ON COV=ON CLQ=ON
 
 Iniciando resolução MIP...
+<<<<<<< HEAD
 Solução ótima encontrada!
 
 Rota encontrada:
@@ -71,3 +101,15 @@ Solução é viável porque:
 - Todas as cidades são visitadas exatamente uma vez
 - Tempo total (99) respeita o poder de KingsLanding (250)
 - Rota forma um ciclo válido começando e terminando em KingsLanding
+=======
+Erro na otimização MIP: 14
+
+Resultados finais:
+Custo: 0.00
+Tempo: 0.02 s
+Gap: 0.00%
+Viável: Não
+
+Rota encontrada:
+KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding KingsLanding 
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7

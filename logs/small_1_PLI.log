@@ -43,7 +43,10 @@ Solução encontrada:
   Gap: 0.00%
 
 Resultados finais:
+<<<<<<< HEAD
 Status: Solução ótima encontrada
+=======
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7
 Custo: 564.00
 Tempo: 0.00 s
 Gap: 0.00%
@@ -51,8 +54,11 @@ Viável: Sim
 
 Rota encontrada:
 KingsLanding Dragonstone CasterlyRock Winterfell Highgarden 
+<<<<<<< HEAD
 
 Solução é viável porque:
 - Todas as cidades são visitadas exatamente uma vez
 - Tempo total (19) respeita o poder de KingsLanding (100)
 - Rota forma um ciclo válido começando e terminando em KingsLanding
+=======
+>>>>>>> 376647bccf18d7f7e813f8f4f9bdb064c89e48f7
