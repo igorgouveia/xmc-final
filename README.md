@@ -73,9 +73,12 @@ sudo apt install python3-pip  # Linux
 
 ### Executar Análises
 ```bash
-./roda_testes.sh  # Roda todos os testes e gera análises
+./roda_testes.sh  # Roda todos os testes small e medium e gera análises
 ```
 
+```bash
+./roda_testes.sh  --all # Roda todos os testes small, medium e large e gera análises
+```
 ### Resultados
 - `logs/`: Logs detalhados de cada execução
 - `resultados/`: Tabelas e gráficos (requer Python)

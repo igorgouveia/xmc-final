@@ -1,12 +1,12 @@
 === Análise Comparativa BB vs PLI ===
 Autor: Igor Oliveira
-Data: 2024-12-12 21:50:56
+Data: 2024-12-12 21:52:01
 
 === Comparação de Tempos ===
 Instâncias resolvidas por ambos:
 
 medium_1:
-  BB: 3.21s
+  BB: 3.28s
   PLI: 0.03s
 
 small_1:
@@ -22,15 +22,15 @@ small_3:
   PLI: 0.00s
 
 Médias:
-BB: 0.80s
+BB: 0.82s
 PLI: 0.01s
 
 === Limite de Tempo (600s) ===
 
 Instâncias resolvidas BB:
-  medium_1: 3.21s
-  medium_2: 3.26s
-  medium_3: 3.18s
+  medium_1: 3.28s
+  medium_2: 3.25s
+  medium_3: 3.27s
   small_1: 0.00s
   small_2: 0.00s
   small_3: 0.00s
