@@ -1,4 +1,4 @@
-=== PLI para TSP ===
+=== Branch and Bound para TSP ===
 Instância: small_3
 Método: BB
 Número de cidades: 5
@@ -19,7 +19,7 @@ Highgarden: 10
 
 === Execução do algoritmo ===
 Resolvendo relaxação linear...
-Relaxação linear resolvida. Valor: 763.00
+Relaxação linear resolvida. Valor: 845.50
 
 Resolvendo com parâmetros:
 - Tempo limite: 600 segundos
@@ -29,20 +29,119 @@ Resolvendo com parâmetros:
 
 Iniciando resolução MIP...
 
-Nova solução encontrada:
+Solução BB encontrada #1:
+Custo: 867.00
+Tempo total: 58
+
+Solução BB encontrada #2:
+Custo: 916.50
+Tempo total: 58
+
+Solução BB encontrada #3:
+Custo: 874.50
+Tempo total: 58
+
+Solução BB encontrada #4:
+Custo: 901.00
+Tempo total: 58
+
+Solução BB encontrada #5:
+Custo: 976.50
+Tempo total: 58
+
+Solução BB encontrada #6:
+Custo: 1052.50
+Tempo total: 58
+
+Solução BB encontrada #7:
 Custo: 841.00
-Gap: 9.27%
+Tempo total: 58
+
+Solução BB encontrada #8:
+Custo: 867.00
+Tempo total: 58
+
+Solução BB encontrada #9:
+Custo: 901.00
+Tempo total: 58
+
+Solução BB encontrada #10:
+Custo: 917.00
+Tempo total: 58
+
+Solução BB encontrada #11:
+Custo: 977.00
+Tempo total: 58
+
+Solução BB encontrada #12:
+Custo: 1019.00
+Tempo total: 58
+
+Solução BB encontrada #13:
+Custo: 841.00
+Tempo total: 58
+
+Solução BB encontrada #14:
+Custo: 992.50
+Tempo total: 58
+
+Solução BB encontrada #15:
+Custo: 874.50
+Tempo total: 58
+
+Solução BB encontrada #16:
+Custo: 1026.50
+Tempo total: 58
+
+Solução BB encontrada #17:
+Custo: 977.00
+Tempo total: 58
+
+Solução BB encontrada #18:
+Custo: 976.50
+Tempo total: 58
+
+Solução BB encontrada #19:
+Custo: 916.50
+Tempo total: 58
+
+Solução BB encontrada #20:
+Custo: 992.50
+Tempo total: 58
+
+Solução BB encontrada #21:
+Custo: 917.00
+Tempo total: 58
+
+Solução BB encontrada #22:
+Custo: 1026.50
+Tempo total: 58
+
+Solução BB encontrada #23:
+Custo: 1019.00
+Tempo total: 58
+
+Solução BB encontrada #24:
+Custo: 1052.50
+Tempo total: 58
+
+Encontradas 24 soluções BB
+
+Melhor solução selecionada:
+Índice: 7 de 24
+Custo: 841.00
+Gap: 0.00%
 
 Solução encontrada:
-  Lower bound (relaxação): 763.00
+  Lower bound (relaxação): 845.50
   Upper bound (inteira): 841.00
-  Gap: 9.27%
+  Gap: 0.00%
 
 Resultados finais:
 Status: Solução ótima encontrada
 Custo: 841.00
 Tempo: 0.00 s
-Gap: 9.27%
+Gap: 0.00%
 Viável: Sim
 
 Rota encontrada:

@@ -86,17 +86,21 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
     
     // Define variáveis x[i][j] e seus custos
     for (int i = 0; i < n; i++) {
+        // Define variáveis x[i][j]
         for (int j = 0; j < n; j++) {
             int idx = i * n + j + 1;
             char name[20];
             sprintf(name, "x_%d_%d", i+1, j+1);
+            // Define o nome da variável
             glp_set_col_name(prob, idx, name);
-            glp_set_col_kind(prob, idx, GLP_BV);  // Variável binária
+            // Define o tipo da variável como binária
+            glp_set_col_kind(prob, idx, GLP_BV);  
             
             if (i != j) {  // Não permite arcos para mesma cidade
                 // Custo = distância * (1 + risco) + tempo mínimo
                 double custo = inst->dist[i][j] * (1.0 + inst->risk[i][j]) + 
                              inst->houses[j].min_time;
+                // Define o coeficiente da função objetivo para a variável x[i][j]
                 glp_set_obj_coef(prob, idx, custo);
             }
         }
@@ -115,6 +119,10 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
     // Define restrições:
     // - Fluxo de entrada/saída
     // - MTZ para eliminação de subciclos
+    // - A primeira cidade (origem) tem ordem 0
+    // - As demais cidades têm ordem entre 1 e n-1
+    // - Se existe um arco de i para j (x[i][j] = 1), então u[j] > u[i]
+
     int num_rows = 2 * n + (n-1)*(n-1);  // Entrada + Saída + MTZ
     glp_add_rows(prob, num_rows);
     
@@ -130,8 +138,11 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
         glp_set_row_name(prob, j+1, "in");
         glp_set_row_bnds(prob, j+1, GLP_FX, 1.0, 1.0);  // Exatamente uma entrada
         
+        // Define os coeficientes das restrições de entrada
         for (int i = 0; i < n; i++) {
+            // Verifica se a cidade i é diferente da cidade j
             if (i != j) {
+                // Define o índice da restrição, a coluna da variável e o coeficiente
                 ia[pos] = j+1;
                 ja[pos] = i * n + j + 1;
                 ar[pos] = 1.0;
@@ -145,10 +156,12 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
         glp_set_row_name(prob, n+i+1, "out");
         glp_set_row_bnds(prob, n+i+1, GLP_FX, 1.0, 1.0);  // Exatamente uma saída
         
+        // Define os coeficientes das restrições de saída
         for (int j = 0; j < n; j++) {
             if (i != j) {
+                // Define o índice da restrição, a coluna da variável e o coeficiente
                 ia[pos] = n+i+1;
-                ja[pos] = i * n + j + 1;
+                ja[pos] = i * n + j + 1;    
                 ar[pos] = 1.0;
                 pos++;
             }
@@ -160,10 +173,13 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
     int row = 2*n + 1;
     for (int i = 1; i < n; i++) {
         for (int j = 1; j < n; j++) {
+            // Verifica se as cidades i e j são diferentes
             if (i != j) {
                 char name[30];
                 sprintf(name, "mtz_%d_%d", i, j);
+                // Define o nome da restrição
                 glp_set_row_name(prob, row, name);
+                // Define o tipo da restrição como GLP_UP (superior)
                 glp_set_row_bnds(prob, row, GLP_UP, -DBL_MAX, n-1);
                 
                 // u[i] - u[j] + n*x[i][j] <= n-1
@@ -240,24 +256,31 @@ Solution* solve_mip(const Instance* inst, const char* nome_arquivo) {
     // Define status da solução
     const char* status_str;
     if (err == 0) {
+        // Verifica se a solução é ótima
         if (glp_mip_status(prob) == GLP_OPT) {
             status_str = "Solução ótima encontrada";
             fprintf(log_file, "Solução ótima encontrada!\n");
         } else {
+            // Se não é ótima, é viável
             status_str = "Solução viável (não ótima)";
             fprintf(log_file, "Solução viável encontrada (não ótima)\n");
         }
         
+        // Define a solução como viável
         solucao->feasible = 1;
+        // Atualiza o custo da solução
         solucao->cost = glp_mip_obj_val(prob);
         
         // Reconstrói a rota a partir das variáveis x[i][j]
         fprintf(log_file, "\nRota encontrada:\n");
         int atual = 0;
         for (int i = 0; i < n; i++) {
+            // Define a cidade atual como a cidade i
             solucao->route[i] = atual;
             fprintf(log_file, "%d: %s\n", i+1, inst->houses[atual].name);
+            // Encontra a próxima cidade a visitar
             for (int j = 0; j < n; j++) {
+                // Verifica se a cidade j é diferente da cidade atual
                 if (atual != j && glp_mip_col_val(prob, atual * n + j + 1) > 0.5) {
                     atual = j;
                     break;

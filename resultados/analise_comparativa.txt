@@ -1,21 +1,13 @@
 === Análise Comparativa BB vs PLI ===
 Autor: Igor Oliveira
-Data: 2024-12-12 17:40:55
+Data: 2024-12-12 21:50:56
 
 === Comparação de Tempos ===
 Instâncias resolvidas por ambos:
 
-large_1:
-  BB: 600.00s
-  PLI: 0.03s
-
-large_2:
-  BB: 600.00s
-  PLI: 0.01s
-
 medium_1:
-  BB: 5.77s
-  PLI: 0.02s
+  BB: 3.21s
+  PLI: 0.03s
 
 small_1:
   BB: 0.00s
@@ -30,26 +22,23 @@ small_3:
   PLI: 0.00s
 
 Médias:
-BB: 200.96s
+BB: 0.80s
 PLI: 0.01s
 
 === Limite de Tempo (600s) ===
 
 Instâncias resolvidas BB:
-  medium_1: 5.77s
-  medium_2: 0.10s
-  medium_3: 12.94s
+  medium_1: 3.21s
+  medium_2: 3.26s
+  medium_3: 3.18s
   small_1: 0.00s
   small_2: 0.00s
   small_3: 0.00s
 
 Instâncias resolvidas PLI:
-  large_1: 0.03s
-  large_2: 0.01s
-  large_3: 0.20s
-  medium_1: 0.02s
+  medium_1: 0.03s
   medium_2: 0.02s
-  medium_3: 0.01s
+  medium_3: 0.02s
   small_1: 0.00s
   small_2: 0.00s
   small_3: 0.00s
@@ -57,52 +46,22 @@ Instâncias resolvidas PLI:
 === Viabilidade após 600s ===
 
 Branch and Bound:
-  large_1: Viável
-  large_2: Viável
-  large_3: Viável
 
 PLI:
 
 === Comparação de Soluções ===
 
-large_1:
-  BB: Custo=2875.50, Gap=3.95%
-  PLI: Custo=3054.50, Gap=1.54%
-  Diferença: 179.00 (6.23%)
-
-large_2:
-  BB: Custo=2316.00, Gap=4.73%
-  PLI: Custo=2464.00, Gap=1.71%
-  Diferença: 148.00 (6.39%)
-
-large_3:
-  BB: Custo=3284.50, Gap=4.76%
-  PLI: Custo=0.00, Gap=0.00%
-
 medium_1:
-  BB: Custo=1598.50, Gap=7.16%
+  BB: Custo=1598.50, Gap=0.00%
   PLI: Custo=1697.50, Gap=4.39%
   Diferença: 99.00 (6.19%)
 
-medium_2:
-  BB: Custo=1008.50, Gap=10.76%
-  PLI: Custo=0.00, Gap=0.00%
-
-medium_3:
-  BB: Custo=1756.00, Gap=6.29%
-  PLI: Custo=0.00, Gap=0.00%
-
 small_1:
-  BB: Custo=545.00, Gap=11.19%
+  BB: Custo=545.00, Gap=1.01%
   PLI: Custo=564.00, Gap=0.00%
   Diferença: 19.00 (3.49%)
 
-small_2:
-  BB: Custo=498.00, Gap=11.75%
-  PLI: Custo=528.00, Gap=0.00%
-  Diferença: 30.00 (6.02%)
-
 small_3:
-  BB: Custo=841.00, Gap=9.27%
+  BB: Custo=841.00, Gap=0.00%
   PLI: Custo=887.00, Gap=0.03%
   Diferença: 46.00 (5.47%)

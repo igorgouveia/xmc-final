@@ -1,4 +1,4 @@
-=== PLI para TSP ===
+=== Branch and Bound para TSP ===
 Instância: small_2
 Método: BB
 Número de cidades: 5
@@ -19,7 +19,7 @@ Highgarden: 7
 
 === Execução do algoritmo ===
 Resolvendo relaxação linear...
-Relaxação linear resolvida. Valor: 439.50
+Relaxação linear resolvida. Valor: 505.25
 
 Resolvendo com parâmetros:
 - Tempo limite: 600 segundos
@@ -29,24 +29,123 @@ Resolvendo com parâmetros:
 
 Iniciando resolução MIP...
 
-Nova solução encontrada:
+Solução BB encontrada #1:
 Custo: 498.00
-Gap: 11.75%
+Tempo total: 38
+
+Solução BB encontrada #2:
+Custo: 632.00
+Tempo total: 38
+
+Solução BB encontrada #3:
+Custo: 526.50
+Tempo total: 38
+
+Solução BB encontrada #4:
+Custo: 653.50
+Tempo total: 38
+
+Solução BB encontrada #5:
+Custo: 498.00
+Tempo total: 38
+
+Solução BB encontrada #6:
+Custo: 514.00
+Tempo total: 38
+
+Solução BB encontrada #7:
+Custo: 535.50
+Tempo total: 38
+
+Solução BB encontrada #8:
+Custo: 555.50
+Tempo total: 38
+
+Solução BB encontrada #9:
+Custo: 605.00
+Tempo total: 38
+
+Solução BB encontrada #10:
+Custo: 641.00
+Tempo total: 38
+
+Solução BB encontrada #11:
+Custo: 514.00
+Tempo total: 38
+
+Solução BB encontrada #12:
+Custo: 562.50
+Tempo total: 38
+
+Solução BB encontrada #13:
+Custo: 526.50
+Tempo total: 38
+
+Solução BB encontrada #14:
+Custo: 535.50
+Tempo total: 38
+
+Solução BB encontrada #15:
+Custo: 612.00
+Tempo total: 38
+
+Solução BB encontrada #16:
+Custo: 669.50
+Tempo total: 38
+
+Solução BB encontrada #17:
+Custo: 605.00
+Tempo total: 38
+
+Solução BB encontrada #18:
+Custo: 612.00
+Tempo total: 38
+
+Solução BB encontrada #19:
+Custo: 562.50
+Tempo total: 38
+
+Solução BB encontrada #20:
+Custo: 632.00
+Tempo total: 38
+
+Solução BB encontrada #21:
+Custo: 555.50
+Tempo total: 38
+
+Solução BB encontrada #22:
+Custo: 653.50
+Tempo total: 38
+
+Solução BB encontrada #23:
+Custo: 641.00
+Tempo total: 38
+
+Solução BB encontrada #24:
+Custo: 669.50
+Tempo total: 38
+
+Encontradas 24 soluções BB
+
+Melhor solução selecionada:
+Índice: 1 de 24
+Custo: 498.00
+Gap: 0.00%
 
 Solução encontrada:
-  Lower bound (relaxação): 439.50
+  Lower bound (relaxação): 505.25
   Upper bound (inteira): 498.00
-  Gap: 11.75%
+  Gap: 0.00%
 
 Resultados finais:
 Status: Solução ótima encontrada
 Custo: 498.00
 Tempo: 0.00 s
-Gap: 11.75%
+Gap: 0.00%
 Viável: Sim
 
 Rota encontrada:
-KingsLanding Dragonstone CasterlyRock Winterfell Highgarden 
+KingsLanding Highgarden Winterfell CasterlyRock Dragonstone 
 Solução é viável porque:
 - Todas as cidades são visitadas exatamente uma vez
 - Tempo total (30) respeita o poder de KingsLanding (80)
